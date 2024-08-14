@@ -12,14 +12,12 @@
         }
         #controls {
             margin-bottom: 20px;
+            text-align: center;
         }
         canvas {
             border: 1px solid black;
             display: block;
             margin: 0 auto;
-        }
-        .selected {
-            border: 2px solid red;
         }
     </style>
 </head>
@@ -31,6 +29,8 @@
             <option value="circle">Círculo</option>
         </select>
         <button id="rotate">Rotar Figura</button>
+        <label for="scale">Escalar Figura:</label>
+        <input type="range" id="scale" min="0.5" max="2" step="0.1" value="1">
         <button id="clear">Limpiar Canvas</button>
     </div>
     <canvas id="canvas" width="800" height="600"></canvas>
@@ -40,6 +40,7 @@
 		const ctx = canvas.getContext('2d');
 		const shapeSelect = document.getElementById('shape');
 		const rotateButton = document.getElementById('rotate');
+		const scaleSlider = document.getElementById('scale');
 		const clearButton = document.getElementById('clear');
 
 		let currentShape = 'rectangle';
@@ -59,9 +60,9 @@
 
 			let shape;
 			if (currentShape === 'rectangle') {
-				shape = { type: 'rectangle', x, y, width: 100, height: 50, rotation: 0 };
+				shape = { type: 'rectangle', x, y, width: 100, height: 50, rotation: 0, scale: 1 };
 			} else if (currentShape === 'circle') {
-				shape = { type: 'circle', x, y, radius: 50, rotation: 0 };
+				shape = { type: 'circle', x, y, radius: 50, rotation: 0, scale: 1 };
 			}
 			shapes.push(shape);
 			selectedShapeIndex = shapes.length - 1;
@@ -75,6 +76,7 @@
 				ctx.save();
 				ctx.translate(shape.x, shape.y);
 				ctx.rotate(shape.rotation);
+				ctx.scale(shape.scale, shape.scale);
 
 				ctx.beginPath();
 				if (shape.type === 'rectangle') {
@@ -95,6 +97,14 @@
 		rotateButton.addEventListener('click', () => {
 			if (selectedShapeIndex !== null) {
 				shapes[selectedShapeIndex].rotation += Math.PI / 4; // Rotar 45 grados
+				drawShapes();
+			}
+		});
+
+		// Manejar el escalado de la figura seleccionada
+		scaleSlider.addEventListener('input', () => {
+			if (selectedShapeIndex !== null) {
+				shapes[selectedShapeIndex].scale = parseFloat(scaleSlider.value);
 				drawShapes();
 			}
 		});
